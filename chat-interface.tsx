@@ -28,18 +28,9 @@ import {
 
 // Add CSS animations
 const animationStyles = `
-  @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
-  }
-  
   @keyframes pulse-subtle {
     0%, 100% { opacity: 1; }
     50% { opacity: 0.8; }
-  }
-  
-  .animate-blink {
-    animation: blink 1s infinite;
   }
   
   .animate-pulse-subtle {
@@ -543,9 +534,6 @@ export default function ChatInterface() {
               )}
             >
               {message.content}
-              {isStreaming && (
-                <span className="inline-block w-1 h-4 ml-0.5 bg-black animate-blink"></span>
-              )}
             </span>
           )}
         </div>
