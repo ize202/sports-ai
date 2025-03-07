@@ -26,6 +26,27 @@ import {
   chunkWords,
 } from "@/app/api/chat-service";
 
+// Add CSS animations
+const animationStyles = `
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+  
+  @keyframes pulse-subtle {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.8; }
+  }
+  
+  .animate-blink {
+    animation: blink 1s infinite;
+  }
+  
+  .animate-pulse-subtle {
+    animation: pulse-subtle 2s infinite;
+  }
+`;
+
 type ActiveButton = "none" | "add" | "deepSearch" | "think";
 type MessageType = "user" | "system";
 
@@ -312,6 +333,8 @@ export default function ChatInterface() {
 
     setIsStreaming(true);
     let fullResponse = "";
+    // Clear streaming words at the start
+    setStreamingWords([]);
 
     try {
       await ChatService.sendResearchQuery(userMessage, {
@@ -319,21 +342,11 @@ export default function ChatInterface() {
           // Process the incoming chunk
           const words = processStreamingText(chunk);
 
-          // Create chunks of words for smoother streaming
-          const wordChunks = chunkWords(words, CHUNK_SIZE);
-
-          // Update the streaming words
-          wordChunks.forEach((wordChunk) => {
-            const newStreamingWord = {
-              id: Date.now() + Math.random(),
-              text: wordChunk.join(" ") + " ",
-            };
-
-            setStreamingWords((prev) => [...prev, newStreamingWord]);
-          });
-
-          // Update the message content
+          // Update the full response
           fullResponse += chunk;
+
+          // Instead of updating streaming words, update the message content directly
+          // This provides a smoother experience
           setMessages((prev) =>
             prev.map((msg) =>
               msg.id === messageId ? { ...msg, content: fullResponse } : msg
@@ -358,7 +371,6 @@ export default function ChatInterface() {
           );
           setIsStreaming(false);
           setStreamingMessageId(null);
-          setStreamingWords([]);
         },
         onComplete: (completeResponse) => {
           // Update with complete message
@@ -377,7 +389,6 @@ export default function ChatInterface() {
           navigator.vibrate(50);
 
           // Reset streaming state
-          setStreamingWords([]);
           setStreamingMessageId(null);
           setIsStreaming(false);
         },
@@ -399,7 +410,6 @@ export default function ChatInterface() {
       );
       setIsStreaming(false);
       setStreamingMessageId(null);
-      setStreamingWords([]);
     }
   };
 
@@ -501,6 +511,7 @@ export default function ChatInterface() {
 
   const renderMessage = (message: Message) => {
     const isCompleted = completedMessages.has(message.id);
+    const isStreaming = message.id === streamingMessageId;
 
     return (
       <div
@@ -518,27 +529,23 @@ export default function ChatInterface() {
               : "text-gray-900"
           )}
         >
-          {/* For user messages or completed system messages, render without animation */}
+          {/* For all messages, render the content */}
           {message.content && (
             <span
-              className={
-                message.type === "system" && !isCompleted
-                  ? "animate-fade-in"
-                  : ""
-              }
+              className={cn(
+                message.type === "system" &&
+                  isStreaming &&
+                  "animate-pulse-subtle",
+                message.type === "system" &&
+                  !isCompleted &&
+                  !isStreaming &&
+                  "animate-fade-in"
+              )}
             >
               {message.content}
-            </span>
-          )}
-
-          {/* For streaming messages, render with animation */}
-          {message.id === streamingMessageId && (
-            <span className="inline">
-              {streamingWords.map((word) => (
-                <span key={word.id} className="animate-fade-in inline">
-                  {word.text}
-                </span>
-              ))}
+              {isStreaming && (
+                <span className="inline-block w-1 h-4 ml-0.5 bg-black animate-blink"></span>
+              )}
             </span>
           )}
         </div>
@@ -578,6 +585,8 @@ export default function ChatInterface() {
       className="bg-gray-50 flex flex-col overflow-hidden"
       style={{ height: isMobile ? `${viewportHeight}px` : "100svh" }}
     >
+      <style dangerouslySetInnerHTML={{ __html: animationStyles }} />
+
       <header className="fixed top-0 left-0 right-0 h-12 flex items-center px-4 z-20 bg-gray-50">
         <div className="w-full flex items-center justify-between px-2">
           <Button variant="ghost" size="icon" className="rounded-full h-8 w-8">
