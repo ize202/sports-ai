@@ -70,14 +70,14 @@ textarea::-webkit-scrollbar-thumb:hover {
 
 /* Mobile height optimization */
 @supports (-webkit-touch-callout: none) {
-  .h-[100dvh] {
+  .h-screen-dynamic {
     height: -webkit-fill-available;
   }
 }
 
 /* iOS Safari specific adjustments */
 @supports (-webkit-touch-callout: none) {
-  .h-[100svh] {
+  .h-screen-dynamic {
     height: -webkit-fill-available;
   }
 
