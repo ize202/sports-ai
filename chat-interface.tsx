@@ -812,7 +812,7 @@ export default function ChatInterface() {
             )}
             onClick={handleInputContainerClick}
           >
-            <div className="pb-9">
+            <div className="pb-12">
               {isWaitlistMode ? (
                 <input
                   type="email"
