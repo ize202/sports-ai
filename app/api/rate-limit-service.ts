@@ -1,4 +1,4 @@
-const DAILY_QUERY_LIMIT = 15;
+const DAILY_QUERY_LIMIT = 5;
 const STORAGE_KEY = 'slipshark_query_data';
 
 interface QueryData {
