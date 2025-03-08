@@ -651,18 +651,8 @@ export default function ChatInterface() {
       <style dangerouslySetInnerHTML={{ __html: animationStyles }} />
 
       <header className="fixed top-0 left-0 right-0 h-12 flex items-center px-4 z-20 bg-[#212121]">
-        <div className="w-full flex items-center justify-between px-2">
-          <Button variant="ghost" size="icon" className="rounded-full h-8 w-8">
-            <Menu className="h-5 w-5 text-[#ececec]" />
-            <span className="sr-only">Menu</span>
-          </Button>
-
-          <h1 className="text-base font-medium text-[#ececec]">Sports AI</h1>
-
-          <Button variant="ghost" size="icon" className="rounded-full h-8 w-8">
-            <PenSquare className="h-5 w-5 text-[#ececec]" />
-            <span className="sr-only">New Chat</span>
-          </Button>
+        <div className="w-full flex items-center justify-center px-2">
+          <h1 className="text-base font-medium text-[#ececec]">Slipshark AI</h1>
         </div>
       </header>
 
@@ -838,6 +828,12 @@ export default function ChatInterface() {
                 </Button>
               </div>
             </div>
+          </div>
+          <div className="text-center mt-2">
+            <p className="text-[#9b9b9b] text-xs">
+              Slipshark AI can make mistakes. Please double check important
+              information.
+            </p>
           </div>
         </form>
       </div>
