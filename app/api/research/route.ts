@@ -4,7 +4,7 @@ export const runtime = 'edge';
 
 export async function POST(req: NextRequest) {
   try {
-    const { query } = await req.json();
+    const { query, platform } = await req.json();
 
     const response = await fetch('https://api.slipshark.com/research', {
       method: 'POST',
@@ -14,7 +14,7 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({ 
         query,
-        platform: 'web'  // Adding platform identifier
+        platform
       })
     });
 
