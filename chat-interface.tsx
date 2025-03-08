@@ -222,6 +222,11 @@ export default function ChatInterface() {
         : "100svh";
     }
 
+    // Check if queries are already exhausted on initial load
+    if (RateLimitService.getRemainingQueries() === 0) {
+      setIsWaitlistMode(true);
+    }
+
     // Update on resize
     window.addEventListener("resize", checkMobileAndViewport);
 
@@ -410,6 +415,7 @@ export default function ChatInterface() {
           completed: true,
         },
       ]);
+      setIsWaitlistMode(true); // Automatically switch to waitlist mode
       return;
     }
 
