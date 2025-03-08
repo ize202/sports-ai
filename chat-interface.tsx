@@ -41,33 +41,39 @@ const animationStyles = `
   /* HTML Content Styles */
   .chat-content {
     line-height: 1.5;
+    color: #ECECF1;
   }
   
   .chat-content h1 {
     font-size: 1.5rem;
     font-weight: 600;
     margin: 1rem 0;
+    color: #ECECF1;
   }
   
   .chat-content h2 {
     font-size: 1.25rem;
     font-weight: 600;
     margin: 0.75rem 0;
+    color: #ECECF1;
   }
   
   .chat-content h3, .chat-content h4, .chat-content h5, .chat-content h6 {
     font-size: 1.1rem;
     font-weight: 600;
     margin: 0.5rem 0;
+    color: #ECECF1;
   }
   
   .chat-content p {
     margin: 0.5rem 0;
+    color: #ECECF1;
   }
   
   .chat-content ul, .chat-content ol {
     margin: 0.5rem 0;
     padding-left: 1.5rem;
+    color: #ECECF1;
   }
   
   .chat-content ul {
@@ -97,13 +103,13 @@ const animationStyles = `
   }
   
   .chat-content th, .chat-content td {
-    border: 1px solid #e2e8f0;
+    border: 1px solid #40414F;
     padding: 0.5rem;
     text-align: left;
   }
   
   .chat-content th {
-    background-color: #f8fafc;
+    background-color: #202123;
     font-weight: 600;
   }
 `;
@@ -578,19 +584,18 @@ export default function ChatInterface() {
       <div
         key={message.id}
         className={cn(
-          "flex flex-col",
+          "flex flex-col w-full",
           message.type === "user" ? "items-end" : "items-start"
         )}
       >
         <div
           className={cn(
-            "max-w-[80%] px-4 py-2 rounded-2xl",
+            "max-w-[80%] px-4 py-2",
             message.type === "user"
-              ? "bg-white border border-gray-200 rounded-br-none"
-              : "text-gray-900"
+              ? "bg-[#303030] rounded-2xl rounded-br-none"
+              : "text-[#ececec]"
           )}
         >
-          {/* For all messages, render the content */}
           {message.content && (
             <div
               className={cn(
@@ -609,22 +614,21 @@ export default function ChatInterface() {
           )}
         </div>
 
-        {/* Message actions */}
         {message.type === "system" && message.completed && (
           <div className="flex items-center gap-2 px-4 mt-1 mb-2">
-            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button className="text-[#ececec] opacity-60 hover:opacity-100 transition-opacity">
               <RefreshCcw className="h-4 w-4" />
             </button>
-            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button className="text-[#ececec] opacity-60 hover:opacity-100 transition-opacity">
               <Copy className="h-4 w-4" />
             </button>
-            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button className="text-[#ececec] opacity-60 hover:opacity-100 transition-opacity">
               <Share2 className="h-4 w-4" />
             </button>
-            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button className="text-[#ececec] opacity-60 hover:opacity-100 transition-opacity">
               <ThumbsUp className="h-4 w-4" />
             </button>
-            <button className="text-gray-400 hover:text-gray-600 transition-colors">
+            <button className="text-[#ececec] opacity-60 hover:opacity-100 transition-opacity">
               <ThumbsDown className="h-4 w-4" />
             </button>
           </div>
@@ -641,22 +645,22 @@ export default function ChatInterface() {
   return (
     <div
       ref={mainContainerRef}
-      className="bg-gray-50 flex flex-col overflow-hidden"
+      className="bg-[#212121] flex flex-col overflow-hidden"
       style={{ height: isMobile ? `${viewportHeight}px` : "100svh" }}
     >
       <style dangerouslySetInnerHTML={{ __html: animationStyles }} />
 
-      <header className="fixed top-0 left-0 right-0 h-12 flex items-center px-4 z-20 bg-gray-50">
+      <header className="fixed top-0 left-0 right-0 h-12 flex items-center px-4 z-20 bg-[#212121] border-b border-[#303030]">
         <div className="w-full flex items-center justify-between px-2">
           <Button variant="ghost" size="icon" className="rounded-full h-8 w-8">
-            <Menu className="h-5 w-5 text-gray-700" />
+            <Menu className="h-5 w-5 text-[#ececec]" />
             <span className="sr-only">Menu</span>
           </Button>
 
-          <h1 className="text-base font-medium text-gray-800">v0 Chat</h1>
+          <h1 className="text-base font-medium text-[#ececec]">Sports AI</h1>
 
           <Button variant="ghost" size="icon" className="rounded-full h-8 w-8">
-            <PenSquare className="h-5 w-5 text-gray-700" />
+            <PenSquare className="h-5 w-5 text-[#ececec]" />
             <span className="sr-only">New Chat</span>
           </Button>
         </div>
@@ -664,7 +668,7 @@ export default function ChatInterface() {
 
       <div
         ref={chatContainerRef}
-        className="flex-grow pb-32 pt-12 px-4 overflow-y-auto"
+        className="flex-grow pb-32 pt-12 px-4 overflow-y-auto bg-[#212121]"
       >
         <div className="max-w-3xl mx-auto space-y-4">
           {messageSections.map((section, sectionIndex) => (
@@ -701,12 +705,12 @@ export default function ChatInterface() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-gray-50">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#212121] border-t border-[#303030]">
         <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
           <div
             ref={inputContainerRef}
             className={cn(
-              "relative w-full rounded-3xl border border-gray-200 bg-white p-3 cursor-text",
+              "relative w-full rounded-2xl border border-[#303030] bg-[#303030] p-3 cursor-text shadow-lg",
               isStreaming && "opacity-80"
             )}
             onClick={handleInputContainerClick}
@@ -715,14 +719,15 @@ export default function ChatInterface() {
               <Textarea
                 ref={textareaRef}
                 placeholder={
-                  isStreaming ? "Waiting for response..." : "Ask Anything"
+                  isStreaming
+                    ? "Waiting for response..."
+                    : "Ask anything about sports..."
                 }
-                className="min-h-[24px] max-h-[160px] w-full rounded-3xl border-0 bg-transparent text-gray-900 placeholder:text-gray-400 placeholder:text-base focus-visible:ring-0 focus-visible:ring-offset-0 text-base pl-2 pr-4 pt-0 pb-0 resize-none overflow-y-auto leading-tight"
+                className="min-h-[24px] max-h-[160px] w-full rounded-2xl border-0 bg-transparent text-white placeholder:text-[#9b9b9b] placeholder:text-base focus-visible:ring-0 focus-visible:ring-offset-0 text-base pl-2 pr-4 pt-0 pb-0 resize-none overflow-y-auto leading-tight"
                 value={inputValue}
                 onChange={handleInputChange}
                 onKeyDown={handleKeyDown}
                 onFocus={() => {
-                  // Ensure the textarea is scrolled into view when focused
                   if (textareaRef.current) {
                     textareaRef.current.scrollIntoView({
                       behavior: "smooth",
@@ -741,16 +746,16 @@ export default function ChatInterface() {
                     variant="outline"
                     size="icon"
                     className={cn(
-                      "rounded-full h-8 w-8 flex-shrink-0 border-gray-200 p-0 transition-colors",
-                      activeButton === "add" && "bg-gray-100 border-gray-300"
+                      "rounded-2xl h-8 w-8 flex-shrink-0 border border-[#454444] bg-[#303030] p-0 transition-colors hover:bg-[#404040]",
+                      activeButton === "add" && "bg-[#404040] border-[#454444]"
                     )}
                     onClick={() => toggleButton("add")}
                     disabled={isStreaming}
                   >
                     <Plus
                       className={cn(
-                        "h-4 w-4 text-gray-500",
-                        activeButton === "add" && "text-gray-700"
+                        "h-4 w-4 text-[#9b9b9b]",
+                        activeButton === "add" && "text-[#ececec]"
                       )}
                     />
                     <span className="sr-only">Add</span>
@@ -760,23 +765,23 @@ export default function ChatInterface() {
                     type="button"
                     variant="outline"
                     className={cn(
-                      "rounded-full h-8 px-3 flex items-center border-gray-200 gap-1.5 transition-colors",
+                      "rounded-2xl h-8 px-3 flex items-center border border-[#454444] bg-[#303030] gap-1.5 transition-colors hover:bg-[#404040]",
                       activeButton === "deepSearch" &&
-                        "bg-gray-100 border-gray-300"
+                        "bg-[#404040] border-[#454444]"
                     )}
                     onClick={() => toggleButton("deepSearch")}
                     disabled={isStreaming}
                   >
                     <Search
                       className={cn(
-                        "h-4 w-4 text-gray-500",
-                        activeButton === "deepSearch" && "text-gray-700"
+                        "h-4 w-4 text-[#9b9b9b]",
+                        activeButton === "deepSearch" && "text-[#ececec]"
                       )}
                     />
                     <span
                       className={cn(
-                        "text-gray-900 text-sm",
-                        activeButton === "deepSearch" && "font-medium"
+                        "text-[#9b9b9b] text-sm",
+                        activeButton === "deepSearch" && "text-[#ececec]"
                       )}
                     >
                       DeepSearch
@@ -787,22 +792,23 @@ export default function ChatInterface() {
                     type="button"
                     variant="outline"
                     className={cn(
-                      "rounded-full h-8 px-3 flex items-center border-gray-200 gap-1.5 transition-colors",
-                      activeButton === "think" && "bg-gray-100 border-gray-300"
+                      "rounded-2xl h-8 px-3 flex items-center border border-[#454444] bg-[#303030] gap-1.5 transition-colors hover:bg-[#404040]",
+                      activeButton === "think" &&
+                        "bg-[#404040] border-[#454444]"
                     )}
                     onClick={() => toggleButton("think")}
                     disabled={isStreaming}
                   >
                     <Lightbulb
                       className={cn(
-                        "h-4 w-4 text-gray-500",
-                        activeButton === "think" && "text-gray-700"
+                        "h-4 w-4 text-[#9b9b9b]",
+                        activeButton === "think" && "text-[#ececec]"
                       )}
                     />
                     <span
                       className={cn(
-                        "text-gray-900 text-sm",
-                        activeButton === "think" && "font-medium"
+                        "text-[#9b9b9b] text-sm",
+                        activeButton === "think" && "text-[#ececec]"
                       )}
                     >
                       Think
@@ -815,15 +821,17 @@ export default function ChatInterface() {
                   variant="outline"
                   size="icon"
                   className={cn(
-                    "rounded-full h-8 w-8 border-0 flex-shrink-0 transition-all duration-200",
-                    hasTyped ? "bg-black scale-110" : "bg-gray-200"
+                    "rounded-2xl h-8 w-8 border border-[#454444] flex-shrink-0 transition-all duration-200",
+                    hasTyped
+                      ? "bg-[#ffffff] border-transparent scale-110"
+                      : "bg-[#303030]"
                   )}
                   disabled={!inputValue.trim() || isStreaming}
                 >
                   <ArrowUp
                     className={cn(
                       "h-4 w-4 transition-colors",
-                      hasTyped ? "text-white" : "text-gray-500"
+                      hasTyped ? "text-[#212121]" : "text-[#9b9b9b]"
                     )}
                   />
                   <span className="sr-only">Submit</span>
