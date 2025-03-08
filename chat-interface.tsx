@@ -623,9 +623,6 @@ export default function ChatInterface() {
               <Copy className="h-4 w-4" />
             </button>
             <button className="text-[#ececec] opacity-60 hover:opacity-100 transition-opacity">
-              <Share2 className="h-4 w-4" />
-            </button>
-            <button className="text-[#ececec] opacity-60 hover:opacity-100 transition-opacity">
               <ThumbsUp className="h-4 w-4" />
             </button>
             <button className="text-[#ececec] opacity-60 hover:opacity-100 transition-opacity">
