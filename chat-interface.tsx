@@ -188,6 +188,7 @@ export default function ChatInterface() {
   const [isWaitlistMode, setIsWaitlistMode] = useState(false);
   const [emailSubmitting, setEmailSubmitting] = useState(false);
   const [emailSubmitted, setEmailSubmitted] = useState(false);
+  const [emailError, setEmailError] = useState(false);
 
   // Constants for layout calculations to account for the padding values
   const HEADER_HEIGHT = 48; // 12px height + padding
@@ -404,7 +405,7 @@ export default function ChatInterface() {
         {
           id: Date.now().toString(),
           content:
-            "You've reached your daily limit of 5 queries. Please try again tomorrow or join our waitlist for unlimited access.",
+            "You've reached your daily limit of 5 queries. Please try again tomorrow or join our waitlist to get notified when we launch the app.",
           type: "system",
           completed: true,
         },
@@ -525,7 +526,9 @@ export default function ChatInterface() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
+  ) => {
     const newValue = e.target.value;
 
     // Only allow input changes when not streaming
@@ -538,11 +541,14 @@ export default function ChatInterface() {
         setHasTyped(false);
       }
 
-      const textarea = textareaRef.current;
-      if (textarea) {
-        textarea.style.height = "auto";
-        const newHeight = Math.max(24, Math.min(textarea.scrollHeight, 160));
-        textarea.style.height = `${newHeight}px`;
+      // Only adjust textarea height when not in waitlist mode
+      if (!isWaitlistMode) {
+        const textarea = textareaRef.current as HTMLTextAreaElement;
+        if (textarea) {
+          textarea.style.height = "auto";
+          const newHeight = Math.max(24, Math.min(textarea.scrollHeight, 160));
+          textarea.style.height = `${newHeight}px`;
+        }
       }
     }
   };
@@ -688,7 +694,9 @@ export default function ChatInterface() {
   const handleWaitlistSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!EMAIL_REGEX.test(inputValue)) {
-      return; // Proper email validation
+      setEmailError(true);
+      setTimeout(() => setEmailError(false), 3000);
+      return;
     }
 
     setEmailSubmitting(true);
@@ -805,35 +813,45 @@ export default function ChatInterface() {
             onClick={handleInputContainerClick}
           >
             <div className="pb-9">
-              <Textarea
-                ref={textareaRef}
-                placeholder={
-                  isWaitlistMode
-                    ? emailSubmitted
+              {isWaitlistMode ? (
+                <input
+                  type="email"
+                  ref={textareaRef as any}
+                  placeholder={
+                    emailSubmitted
                       ? "Thanks! We'll be in touch soon."
                       : "Enter your email to join the waitlist..."
-                    : remainingQueries === 0
-                    ? "Daily limit reached."
-                    : isStreaming
-                    ? "Waiting for response..."
-                    : "Ask anything about sports..."
-                }
-                className="min-h-[24px] max-h-[160px] w-full rounded-2xl border-0 bg-transparent text-white placeholder:text-[#9b9b9b] placeholder:text-base focus-visible:ring-0 focus-visible:ring-offset-0 text-base pl-2 pr-4 pt-0 pb-0 resize-none overflow-y-auto leading-tight"
-                value={inputValue}
-                onChange={handleInputChange}
-                onKeyDown={isWaitlistMode ? undefined : handleKeyDown}
-                disabled={
-                  (!isWaitlistMode && remainingQueries === 0) || emailSubmitted
-                }
-                onFocus={() => {
-                  if (textareaRef.current) {
-                    textareaRef.current.scrollIntoView({
-                      behavior: "smooth",
-                      block: "center",
-                    });
                   }
-                }}
-              />
+                  className="min-h-[24px] w-full rounded-2xl border-0 bg-transparent text-white placeholder:text-[#9b9b9b] placeholder:text-base focus-visible:ring-0 focus-visible:ring-offset-0 text-base pl-2 pr-4 pt-0 pb-0 leading-tight"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  disabled={emailSubmitted}
+                />
+              ) : (
+                <Textarea
+                  ref={textareaRef}
+                  placeholder={
+                    remainingQueries === 0
+                      ? "Daily limit reached."
+                      : isStreaming
+                      ? "Waiting for response..."
+                      : "Ask anything about sports..."
+                  }
+                  className="min-h-[24px] max-h-[160px] w-full rounded-2xl border-0 bg-transparent text-white placeholder:text-[#9b9b9b] placeholder:text-base focus-visible:ring-0 focus-visible:ring-offset-0 text-base pl-2 pr-4 pt-0 pb-0 resize-none overflow-y-auto leading-tight"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  disabled={remainingQueries === 0}
+                  onFocus={() => {
+                    if (textareaRef.current) {
+                      textareaRef.current.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center",
+                      });
+                    }
+                  }}
+                />
+              )}
             </div>
 
             <div className="absolute bottom-3 left-3 right-3">
@@ -868,7 +886,7 @@ export default function ChatInterface() {
                   size="icon"
                   className={cn(
                     "rounded-2xl h-8 w-8 border border-[#454444] flex-shrink-0 transition-all duration-200",
-                    hasTyped || (isWaitlistMode && EMAIL_REGEX.test(inputValue))
+                    hasTyped || isWaitlistMode
                       ? "bg-[#ffffff] border-transparent scale-110"
                       : "bg-[#303030]"
                   )}
@@ -878,8 +896,7 @@ export default function ChatInterface() {
                     (!isWaitlistMode &&
                       (!inputValue.trim() ||
                         isStreaming ||
-                        remainingQueries === 0)) ||
-                    (isWaitlistMode && !EMAIL_REGEX.test(inputValue))
+                        remainingQueries === 0))
                   }
                 >
                   {emailSubmitting ? (
@@ -888,8 +905,7 @@ export default function ChatInterface() {
                     <ArrowUp
                       className={cn(
                         "h-4 w-4 transition-colors",
-                        hasTyped ||
-                          (isWaitlistMode && EMAIL_REGEX.test(inputValue))
+                        hasTyped || isWaitlistMode
                           ? "text-[#212121]"
                           : "text-[#9b9b9b]"
                       )}
@@ -901,9 +917,16 @@ export default function ChatInterface() {
             </div>
           </div>
           <div className="text-center mt-2">
-            <p className="text-[#9b9b9b] text-xs">
+            <p
+              className={cn(
+                "text-xs transition-colors",
+                emailError ? "text-red-400" : "text-[#9b9b9b]"
+              )}
+            >
               {isWaitlistMode
-                ? emailSubmitted
+                ? emailError
+                  ? "Please enter a valid email address"
+                  : emailSubmitted
                   ? "Thanks for joining! We'll be in touch soon."
                   : "Join our waitlist to get notified when we launch the app."
                 : remainingQueries === 0
