@@ -4,6 +4,7 @@ import "ios-vibrator-pro-max";
 
 import type React from "react";
 import { useState, useRef, useEffect } from "react";
+import parse from "html-react-parser";
 import {
   Search,
   Plus,
@@ -26,7 +27,7 @@ import {
   chunkWords,
 } from "@/app/api/chat-service";
 
-// Add CSS animations
+// Add CSS animations and HTML styles
 const animationStyles = `
   @keyframes pulse-subtle {
     0%, 100% { opacity: 1; }
@@ -35,6 +36,75 @@ const animationStyles = `
   
   .animate-pulse-subtle {
     animation: pulse-subtle 2s infinite;
+  }
+
+  /* HTML Content Styles */
+  .chat-content {
+    line-height: 1.5;
+  }
+  
+  .chat-content h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 1rem 0;
+  }
+  
+  .chat-content h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0.75rem 0;
+  }
+  
+  .chat-content h3, .chat-content h4, .chat-content h5, .chat-content h6 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0.5rem 0;
+  }
+  
+  .chat-content p {
+    margin: 0.5rem 0;
+  }
+  
+  .chat-content ul, .chat-content ol {
+    margin: 0.5rem 0;
+    padding-left: 1.5rem;
+  }
+  
+  .chat-content ul {
+    list-style-type: disc;
+  }
+  
+  .chat-content ol {
+    list-style-type: decimal;
+  }
+  
+  .chat-content li {
+    margin: 0.25rem 0;
+  }
+  
+  .chat-content strong {
+    font-weight: 600;
+  }
+  
+  .chat-content em {
+    font-style: italic;
+  }
+  
+  .chat-content table {
+    border-collapse: collapse;
+    margin: 1rem 0;
+    width: 100%;
+  }
+  
+  .chat-content th, .chat-content td {
+    border: 1px solid #e2e8f0;
+    padding: 0.5rem;
+    text-align: left;
+  }
+  
+  .chat-content th {
+    background-color: #f8fafc;
+    font-weight: 600;
   }
 `;
 
@@ -522,8 +592,9 @@ export default function ChatInterface() {
         >
           {/* For all messages, render the content */}
           {message.content && (
-            <span
+            <div
               className={cn(
+                "chat-content",
                 message.type === "system" &&
                   isStreaming &&
                   "animate-pulse-subtle",
@@ -533,8 +604,8 @@ export default function ChatInterface() {
                   "animate-fade-in"
               )}
             >
-              {message.content}
-            </span>
+              {parse(message.content)}
+            </div>
           )}
         </div>
 
