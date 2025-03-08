@@ -731,74 +731,12 @@ export default function ChatInterface() {
                   <Button
                     type="button"
                     variant="outline"
-                    size="icon"
                     className={cn(
-                      "rounded-2xl h-8 w-8 flex-shrink-0 border border-[#454444] bg-[#303030] p-0 transition-colors hover:bg-[#404040]",
-                      activeButton === "add" && "bg-[#404040] border-[#454444]"
+                      "rounded-2xl h-8 px-3 flex items-center border border-[#454444] bg-[#303030] gap-1.5 transition-colors hover:bg-[#404040]"
                     )}
-                    onClick={() => toggleButton("add")}
-                    disabled={isStreaming}
                   >
-                    <Plus
-                      className={cn(
-                        "h-4 w-4 text-[#9b9b9b]",
-                        activeButton === "add" && "text-[#ececec]"
-                      )}
-                    />
-                    <span className="sr-only">Add</span>
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={cn(
-                      "rounded-2xl h-8 px-3 flex items-center border border-[#454444] bg-[#303030] gap-1.5 transition-colors hover:bg-[#404040]",
-                      activeButton === "deepSearch" &&
-                        "bg-[#404040] border-[#454444]"
-                    )}
-                    onClick={() => toggleButton("deepSearch")}
-                    disabled={isStreaming}
-                  >
-                    <Search
-                      className={cn(
-                        "h-4 w-4 text-[#9b9b9b]",
-                        activeButton === "deepSearch" && "text-[#ececec]"
-                      )}
-                    />
-                    <span
-                      className={cn(
-                        "text-[#9b9b9b] text-sm",
-                        activeButton === "deepSearch" && "text-[#ececec]"
-                      )}
-                    >
-                      DeepSearch
-                    </span>
-                  </Button>
-
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={cn(
-                      "rounded-2xl h-8 px-3 flex items-center border border-[#454444] bg-[#303030] gap-1.5 transition-colors hover:bg-[#404040]",
-                      activeButton === "think" &&
-                        "bg-[#404040] border-[#454444]"
-                    )}
-                    onClick={() => toggleButton("think")}
-                    disabled={isStreaming}
-                  >
-                    <Lightbulb
-                      className={cn(
-                        "h-4 w-4 text-[#9b9b9b]",
-                        activeButton === "think" && "text-[#ececec]"
-                      )}
-                    />
-                    <span
-                      className={cn(
-                        "text-[#9b9b9b] text-sm",
-                        activeButton === "think" && "text-[#ececec]"
-                      )}
-                    >
-                      Think
+                    <span className="text-[#9b9b9b] text-sm">
+                      Join waitlist for iOS app
                     </span>
                   </Button>
                 </div>
