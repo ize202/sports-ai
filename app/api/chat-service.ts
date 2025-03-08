@@ -16,6 +16,10 @@ interface StreamingCallbacks {
       callbacks: StreamingCallbacks
     ): Promise<void> {
       try {
+        // Determine platform based on viewport width
+        const isMobileViewport = typeof window !== 'undefined' && window.innerWidth < 768;
+        const platform = isMobileViewport ? 'mobile' : 'web';
+  
         const response = await fetch(endpoint, {
           method: "POST",
           headers: {
@@ -23,7 +27,7 @@ interface StreamingCallbacks {
           },
           body: JSON.stringify({ 
             query,
-            platform: 'web'
+            platform
           }),
         });
   
