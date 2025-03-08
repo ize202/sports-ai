@@ -429,7 +429,7 @@ export default function ChatInterface() {
     }
     queryCountTimerRef.current = setTimeout(() => {
       setShowQueryCount(false);
-    }, 5000);
+    }, 3000);
 
     // Create a new message with empty content
     const messageId = Date.now().toString();
