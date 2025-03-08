@@ -650,7 +650,7 @@ export default function ChatInterface() {
     >
       <style dangerouslySetInnerHTML={{ __html: animationStyles }} />
 
-      <header className="fixed top-0 left-0 right-0 h-12 flex items-center px-4 z-20 bg-[#212121] border-b border-[#303030]">
+      <header className="fixed top-0 left-0 right-0 h-12 flex items-center px-4 z-20 bg-[#212121]">
         <div className="w-full flex items-center justify-between px-2">
           <Button variant="ghost" size="icon" className="rounded-full h-8 w-8">
             <Menu className="h-5 w-5 text-[#ececec]" />
@@ -705,7 +705,7 @@ export default function ChatInterface() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#212121] border-t border-[#303030]">
+      <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#212121]">
         <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
           <div
             ref={inputContainerRef}
