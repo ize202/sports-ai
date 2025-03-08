@@ -26,6 +26,17 @@ import {
   processStreamingText,
   chunkWords,
 } from "@/app/api/chat-service";
+import { RateLimitService } from "@/app/api/rate-limit-service";
+import { createClient } from "@supabase/supabase-js";
+
+// Initialize Supabase client
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
+
+// Email validation regex
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 // Add CSS animations and HTML styles
 const animationStyles = `
@@ -171,6 +182,12 @@ export default function ChatInterface() {
     start: number | null;
     end: number | null;
   }>({ start: null, end: null });
+  const queryCountTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [showQueryCount, setShowQueryCount] = useState(false);
+  const [remainingQueries, setRemainingQueries] = useState(5);
+  const [isWaitlistMode, setIsWaitlistMode] = useState(false);
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
+  const [emailSubmitted, setEmailSubmitted] = useState(false);
 
   // Constants for layout calculations to account for the padding values
   const HEADER_HEIGHT = 48; // 12px height + padding
@@ -379,6 +396,34 @@ export default function ChatInterface() {
   };
 
   const getAIResponse = async (userMessage: string) => {
+    // Check rate limit before proceeding
+    const canProceed = await RateLimitService.incrementQueryCount();
+    if (!canProceed) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          id: Date.now().toString(),
+          content:
+            "You've reached your daily limit of 5 queries. Please try again tomorrow or join our waitlist for unlimited access.",
+          type: "system",
+          completed: true,
+        },
+      ]);
+      return;
+    }
+
+    // Update remaining queries
+    setRemainingQueries(RateLimitService.getRemainingQueries());
+
+    // Show query count notification
+    setShowQueryCount(true);
+    if (queryCountTimerRef.current) {
+      clearTimeout(queryCountTimerRef.current);
+    }
+    queryCountTimerRef.current = setTimeout(() => {
+      setShowQueryCount(false);
+    }, 5000);
+
     // Create a new message with empty content
     const messageId = Date.now().toString();
     setStreamingMessageId(messageId);
@@ -639,6 +684,49 @@ export default function ChatInterface() {
     return sectionIndex > 0;
   };
 
+  // Handle waitlist submission
+  const handleWaitlistSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!EMAIL_REGEX.test(inputValue)) {
+      return; // Proper email validation
+    }
+
+    setEmailSubmitting(true);
+    try {
+      const { error } = await supabase
+        .from("waitlist")
+        .insert([{ email: inputValue }]);
+
+      if (error) throw error;
+
+      setEmailSubmitted(true);
+      setInputValue("");
+      // Show success message for 3 seconds then return to chat mode
+      setTimeout(() => {
+        setIsWaitlistMode(false);
+        setEmailSubmitted(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Error submitting to waitlist:", error);
+    } finally {
+      setEmailSubmitting(false);
+    }
+  };
+
+  // Toggle waitlist mode
+  const handleWaitlistClick = () => {
+    if (isWaitlistMode) {
+      setIsWaitlistMode(false);
+      setEmailSubmitted(false);
+    } else {
+      setIsWaitlistMode(true);
+      setInputValue("");
+    }
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
+
   return (
     <div
       ref={mainContainerRef}
@@ -693,12 +781,26 @@ export default function ChatInterface() {
       </div>
 
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#212121]">
-        <form onSubmit={handleSubmit} className="max-w-3xl mx-auto">
+        <form
+          onSubmit={isWaitlistMode ? handleWaitlistSubmit : handleSubmit}
+          className="max-w-3xl mx-auto"
+        >
+          {showQueryCount && !isWaitlistMode && (
+            <div className="mb-2 text-center">
+              <span className="text-[#9b9b9b] text-sm">
+                {remainingQueries}{" "}
+                {remainingQueries === 1 ? "query" : "queries"} remaining today
+              </span>
+            </div>
+          )}
+
           <div
             ref={inputContainerRef}
             className={cn(
               "relative w-full rounded-2xl border border-[#303030] bg-[#303030] p-3 cursor-text shadow-lg",
-              isStreaming && "opacity-80"
+              (isStreaming || remainingQueries === 0) &&
+                !isWaitlistMode &&
+                "opacity-80"
             )}
             onClick={handleInputContainerClick}
           >
@@ -706,14 +808,23 @@ export default function ChatInterface() {
               <Textarea
                 ref={textareaRef}
                 placeholder={
-                  isStreaming
+                  isWaitlistMode
+                    ? emailSubmitted
+                      ? "Thanks! We'll be in touch soon."
+                      : "Enter your email to join the waitlist..."
+                    : remainingQueries === 0
+                    ? "Daily limit reached."
+                    : isStreaming
                     ? "Waiting for response..."
                     : "Ask anything about sports..."
                 }
                 className="min-h-[24px] max-h-[160px] w-full rounded-2xl border-0 bg-transparent text-white placeholder:text-[#9b9b9b] placeholder:text-base focus-visible:ring-0 focus-visible:ring-offset-0 text-base pl-2 pr-4 pt-0 pb-0 resize-none overflow-y-auto leading-tight"
                 value={inputValue}
                 onChange={handleInputChange}
-                onKeyDown={handleKeyDown}
+                onKeyDown={isWaitlistMode ? undefined : handleKeyDown}
+                disabled={
+                  (!isWaitlistMode && remainingQueries === 0) || emailSubmitted
+                }
                 onFocus={() => {
                   if (textareaRef.current) {
                     textareaRef.current.scrollIntoView({
@@ -732,11 +843,21 @@ export default function ChatInterface() {
                     type="button"
                     variant="outline"
                     className={cn(
-                      "rounded-2xl h-8 px-3 flex items-center border border-[#454444] bg-[#303030] gap-1.5 transition-colors hover:bg-[#404040]"
+                      "rounded-2xl h-8 px-3 flex items-center border gap-1.5 transition-colors",
+                      isWaitlistMode
+                        ? "bg-[#423F21] border-[#FFD700] text-[#FFD700] hover:bg-[#4d4926]"
+                        : "border-[#454444] bg-[#303030] hover:bg-[#404040] hover:border-[#505050]"
                     )}
+                    onClick={handleWaitlistClick}
+                    disabled={emailSubmitting}
                   >
-                    <span className="text-[#9b9b9b] text-sm">
-                      Join waitlist for iOS app
+                    <span
+                      className={cn(
+                        "text-sm transition-colors",
+                        isWaitlistMode ? "text-[#FFD700]" : "text-[#9b9b9b]"
+                      )}
+                    >
+                      Join our waitlist
                     </span>
                   </Button>
                 </div>
@@ -747,18 +868,33 @@ export default function ChatInterface() {
                   size="icon"
                   className={cn(
                     "rounded-2xl h-8 w-8 border border-[#454444] flex-shrink-0 transition-all duration-200",
-                    hasTyped
+                    hasTyped || (isWaitlistMode && EMAIL_REGEX.test(inputValue))
                       ? "bg-[#ffffff] border-transparent scale-110"
                       : "bg-[#303030]"
                   )}
-                  disabled={!inputValue.trim() || isStreaming}
+                  disabled={
+                    emailSubmitted ||
+                    emailSubmitting ||
+                    (!isWaitlistMode &&
+                      (!inputValue.trim() ||
+                        isStreaming ||
+                        remainingQueries === 0)) ||
+                    (isWaitlistMode && !EMAIL_REGEX.test(inputValue))
+                  }
                 >
-                  <ArrowUp
-                    className={cn(
-                      "h-4 w-4 transition-colors",
-                      hasTyped ? "text-[#212121]" : "text-[#9b9b9b]"
-                    )}
-                  />
+                  {emailSubmitting ? (
+                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#212121] border-t-transparent" />
+                  ) : (
+                    <ArrowUp
+                      className={cn(
+                        "h-4 w-4 transition-colors",
+                        hasTyped ||
+                          (isWaitlistMode && EMAIL_REGEX.test(inputValue))
+                          ? "text-[#212121]"
+                          : "text-[#9b9b9b]"
+                      )}
+                    />
+                  )}
                   <span className="sr-only">Submit</span>
                 </Button>
               </div>
@@ -766,8 +902,13 @@ export default function ChatInterface() {
           </div>
           <div className="text-center mt-2">
             <p className="text-[#9b9b9b] text-xs">
-              Slipshark AI can make mistakes. Please double check important
-              information.
+              {isWaitlistMode
+                ? emailSubmitted
+                  ? "Thanks for joining! We'll be in touch soon."
+                  : "Join our waitlist to get notified when we launch the app."
+                : remainingQueries === 0
+                ? "You've reached your daily limit. Join our waitlist for the app launch."
+                : "Slipshark AI can make mistakes. Please double check important information."}
             </p>
           </div>
         </form>
