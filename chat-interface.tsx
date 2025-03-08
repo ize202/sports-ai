@@ -721,7 +721,16 @@ export default function ChatInterface() {
         .from("waitlist")
         .insert([{ email: inputValue }]);
 
-      if (error) throw error;
+      if (error) {
+        // Check if it's a duplicate email error
+        if (error.code === "23505") {
+          setEmailError(true);
+          setInputValue("");
+          setTimeout(() => setEmailError(false), 3000);
+          return;
+        }
+        throw error;
+      }
 
       setEmailSubmitted(true);
       setInputValue("");
@@ -732,6 +741,8 @@ export default function ChatInterface() {
       }, 3000);
     } catch (error) {
       console.error("Error submitting to waitlist:", error);
+      setEmailError(true);
+      setTimeout(() => setEmailError(false), 3000);
     } finally {
       setEmailSubmitting(false);
     }
@@ -941,7 +952,7 @@ export default function ChatInterface() {
             >
               {isWaitlistMode
                 ? emailError
-                  ? "Please enter a valid email address"
+                  ? "This email is already on the waitlist or there was an error. Please try again."
                   : emailSubmitted
                   ? "Thanks for joining! We'll be in touch soon."
                   : "Join our waitlist to get notified when we launch the app."
