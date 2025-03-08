@@ -822,7 +822,7 @@ export default function ChatInterface() {
                       ? "Thanks! We'll be in touch soon."
                       : "Enter your email to join the waitlist..."
                   }
-                  className="min-h-[24px] w-full rounded-2xl border-0 bg-transparent text-white placeholder:text-[#9b9b9b] placeholder:text-base focus-visible:ring-0 focus-visible:ring-offset-0 text-base pl-2 pr-4 pt-0 pb-0 leading-tight"
+                  className="min-h-[24px] w-full rounded-2xl border-0 bg-transparent text-white placeholder:text-[#9b9b9b] placeholder:text-base focus:outline-none focus-visible:ring-0 focus-visible:ring-offset-0 text-base pl-2 pr-4 pt-0 pb-0 leading-tight"
                   value={inputValue}
                   onChange={handleInputChange}
                   disabled={emailSubmitted}
