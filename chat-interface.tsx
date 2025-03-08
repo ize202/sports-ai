@@ -429,6 +429,10 @@ export default function ChatInterface() {
     }
     queryCountTimerRef.current = setTimeout(() => {
       setShowQueryCount(false);
+      // Check if this was the last query and switch to waitlist mode if so
+      if (RateLimitService.getRemainingQueries() === 0) {
+        setIsWaitlistMode(true);
+      }
     }, 3000);
 
     // Create a new message with empty content
