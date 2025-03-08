@@ -657,6 +657,12 @@ export default function ChatInterface() {
               : "text-[#ececec]"
           )}
         >
+          {message.type === "system" && isStreaming && !message.content && (
+            <div className="flex items-center gap-2 text-[#9b9b9b]">
+              <div className="h-4 w-4 animate-spin rounded-full border-2 border-[#9b9b9b] border-t-transparent" />
+              <span>thinking...</span>
+            </div>
+          )}
           {message.content && (
             <div
               className={cn(
