@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
   openGraph: {
     title:
-      "SlipShark - ChatGPT for Sports Betting | Smart Tracking & AI Research",
+      "SlipShark - ChatGPT for Sports Betting | Smart Bet Tracking & AI Research",
     description:
       "Transform your sports betting with AI-powered bet tracking and research. Share bet slips, get instant insights, and make data-driven decisions. The smartest betting companion for iOS.",
     type: "website",
