@@ -101,10 +101,12 @@ const animationStyles = `
   
   .chat-content strong {
     font-weight: 600;
+    
   }
   
   .chat-content em {
     font-style: italic;
+    color: #ECECF1;
   }
   
   .chat-content table {
@@ -122,6 +124,31 @@ const animationStyles = `
   .chat-content th {
     background-color: #202123;
     font-weight: 600;
+  }
+
+  .chat-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+    display: block;
+  }
+
+  .chat-content a {
+    color: #3B82F6;
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .chat-content a:hover {
+    opacity: 0.8;
+    text-decoration: underline;
+  }
+
+  .chat-content br {
+    content: "";
+    display: block;
+    margin: 0.5rem 0;
   }
 `;
 
