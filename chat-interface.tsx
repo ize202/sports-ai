@@ -28,6 +28,7 @@ import {
 } from "@/app/api/chat-service";
 import { RateLimitService } from "@/app/api/rate-limit-service";
 import { createClient } from "@supabase/supabase-js";
+import Image from "next/image";
 
 // Initialize Supabase client
 const supabase = createClient(
@@ -808,36 +809,53 @@ export default function ChatInterface() {
         className="flex-grow pb-32 pt-12 px-4 overflow-y-auto bg-[#212121]"
       >
         <div className="max-w-3xl mx-auto space-y-4">
-          {messageSections.map((section, sectionIndex) => (
-            <div
-              key={section.id}
-              ref={
-                sectionIndex === messageSections.length - 1 &&
-                section.isNewSection
-                  ? newSectionRef
-                  : null
-              }
-            >
-              {section.isNewSection && (
-                <div
-                  style={
-                    section.isActive && shouldApplyHeight(section.sectionIndex)
-                      ? { height: `${getContentHeight()}px` }
-                      : {}
-                  }
-                  className="pt-4 flex flex-col justify-start"
-                >
-                  {section.messages.map((message) => renderMessage(message))}
-                </div>
-              )}
-
-              {!section.isNewSection && (
-                <div>
-                  {section.messages.map((message) => renderMessage(message))}
-                </div>
-              )}
+          {messageSections.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-[calc(100vh-250px)]">
+              <Image
+                src="/clear logo.png"
+                alt="Slipshark AI Logo"
+                width={200}
+                height={200}
+                className="mb-6"
+                priority
+              />
+              <h2 className="text-[#ececec] text-2xl font-medium mb-2">
+                ChatGPT for Sports
+              </h2>
             </div>
-          ))}
+          ) : (
+            messageSections.map((section, sectionIndex) => (
+              <div
+                key={section.id}
+                ref={
+                  sectionIndex === messageSections.length - 1 &&
+                  section.isNewSection
+                    ? newSectionRef
+                    : null
+                }
+              >
+                {section.isNewSection && (
+                  <div
+                    style={
+                      section.isActive &&
+                      shouldApplyHeight(section.sectionIndex)
+                        ? { height: `${getContentHeight()}px` }
+                        : {}
+                    }
+                    className="pt-4 flex flex-col justify-start"
+                  >
+                    {section.messages.map((message) => renderMessage(message))}
+                  </div>
+                )}
+
+                {!section.isNewSection && (
+                  <div>
+                    {section.messages.map((message) => renderMessage(message))}
+                  </div>
+                )}
+              </div>
+            ))
+          )}
           <div ref={messagesEndRef} />
         </div>
       </div>
