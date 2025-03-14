@@ -7,13 +7,13 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 export const metadata: Metadata = {
   title: "SlipShark - AI Sports Betting Tracker & Research Assistant",
   description:
-    "Smart bet tracking + AI research assistant in one simple iOS app. The ChatGPT of sports betting. Share screenshots to track bets automatically. Get personalized insights to make smarter betting decisions.",
+    "Smart bet tracking + AI research assistant in one simple app. The ChatGPT of sports betting. Share bet and fantasy slips to track bets automatically. Get personalized insights to make smarter betting decisions.",
 
   openGraph: {
     title:
       "SlipShark - ChatGPT for Sports Betting | Smart Bet Tracking & AI Research",
     description:
-      "Transform your sports betting with AI-powered bet tracking and research. Share bet slips, get instant insights, and make data-driven decisions. The smartest betting companion for iOS.",
+      "Transform your sports betting with AI-powered bet tracking and research. Share bet slips and fantasy slips, get instant insights, and make data-driven decisions. The smartest betting companion.",
     type: "website",
     images: [
       {
