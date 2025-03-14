@@ -177,6 +177,13 @@ interface StreamingWord {
   text: string;
 }
 
+const EXAMPLE_QUERIES = [
+  "NBA games today",
+  "Any NBA injuries",
+  "The first MLB game next season",
+  "How did LeBron perform last night",
+];
+
 // Faster word delay for smoother streaming
 const WORD_DELAY = 40; // ms per word
 const CHUNK_SIZE = 2; // Number of words to add at once
@@ -790,6 +797,27 @@ export default function ChatInterface() {
     }
   };
 
+  const handleExampleClick = (query: string) => {
+    if (!isStreaming && remainingQueries > 0) {
+      setInputValue(query);
+      // Simulate a form submission with the selected query
+      const userMessage = query.trim();
+
+      // Add as a new section if messages already exist
+      const shouldAddNewSection = messages.length > 0;
+
+      const newUserMessage = {
+        id: `user-${Date.now()}`,
+        content: userMessage,
+        type: "user" as MessageType,
+        newSection: shouldAddNewSection,
+      };
+
+      setMessages((prev) => [...prev, newUserMessage]);
+      getAIResponse(userMessage);
+    }
+  };
+
   return (
     <div
       ref={mainContainerRef}
@@ -819,9 +847,21 @@ export default function ChatInterface() {
                 className="mb-6"
                 priority
               />
-              <h2 className="text-[#ececec] text-2xl font-medium mb-2">
+              <h2 className="text-[#ececec] text-2xl font-medium mb-6">
                 ChatGPT for Sports
               </h2>
+              <div className="flex flex-wrap justify-center gap-3 max-w-lg px-4">
+                {EXAMPLE_QUERIES.map((query, index) => (
+                  <button
+                    key={index}
+                    onClick={() => handleExampleClick(query)}
+                    className="px-4 py-2 rounded-lg border border-[#454444] bg-[#303030] text-[#ececec] hover:bg-[#404040] hover:border-[#505050] transition-colors text-sm"
+                    disabled={isStreaming || remainingQueries === 0}
+                  >
+                    {query}
+                  </button>
+                ))}
+              </div>
             </div>
           ) : (
             messageSections.map((section, sectionIndex) => (
